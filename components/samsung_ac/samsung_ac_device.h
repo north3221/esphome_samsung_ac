@@ -193,7 +193,7 @@ namespace esphome
         Samsung_AC_Binary_Sensor cust_binary_sensor;
         cust_binary_sensor.message_number = (uint16_t)message_number;
         cust_binary_sensor.binary_sensor = binary_sensor;
-        custom_sensors.push_back(std::move(cust_binary_sensor));
+        custom_binary_sensors.push_back(std::move(cust_binary_sensor));
       }
 
       void set_indoor_eva_out_temperature_sensor(sensor::Sensor *sensor)
