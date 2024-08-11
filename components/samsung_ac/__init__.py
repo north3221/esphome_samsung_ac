@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import uart, sensor, switch, select, number, climate
+from esphome.components import uart, sensor, switch, select, number, climate, binary_sensor
 from esphome.const import (
     CONF_ID,
     DEVICE_CLASS_TEMPERATURE,
@@ -24,7 +24,7 @@ from esphome.core import CORE, Lambda
 
 CODEOWNERS = ["matthias882", "lanwin", "omerfaruk-aran"]
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["sensor", "switch", "select", "number", "climate"]
+AUTO_LOAD = ["sensor", "switch", "select", "number", "climate", "binary_sensor"]
 MULTI_CONF = False
 
 CONF_SAMSUNG_AC_ID = "samsung_ac_id"
@@ -141,7 +141,7 @@ CUSTOM_SENSOR_SCHEMA = sensor.sensor_schema().extend(
     }
 )
 
-CUSTOM_BINARY_SENSOR_SCHEMA = sensor.binary_sensor_schema().extend({
+CUSTOM_BINARY_SENSOR_SCHEMA = binary_sensor.binary_sensor_schema().extend({
     cv.Required(CONF_DEVICE_CUSTOM_MESSAGE): cv.hex_int,
 })
 
