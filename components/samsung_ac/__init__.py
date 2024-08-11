@@ -73,6 +73,7 @@ CONF_DEVICE_WATER_HEATER_MODE = "water_heater_mode"
 CONF_DEVICE_CLIMATE = "climate"
 CONF_DEVICE_ROOM_HUMIDITY = "room_humidity"
 CONF_DEVICE_CUSTOM = "custom_sensor"
+CONF_DEVICE_CUSTOM_BINARY = "custom_binary_sensor"
 CONF_DEVICE_CUSTOM_MESSAGE = "message"
 CONF_DEVICE_CUSTOM_RAW_FILTERS = "raw_filters"
 CONF_DEVICE_ERROR_CODE = "error_code"
@@ -140,6 +141,10 @@ CUSTOM_SENSOR_SCHEMA = sensor.sensor_schema().extend(
     }
 )
 
+CUSTOM_BINARY_SENSOR_SCHEMA = sensor.binary_sensor_schema().extend({
+    cv.Required(CONF_DEVICE_CUSTOM_MESSAGE): cv.hex_int,
+})
+
 
 def custom_sensor_schema(
     message: int,
@@ -189,12 +194,48 @@ def humidity_sensor_schema(message: int):
     )
 
 
+
 def error_code_sensor_schema(message: int):
     return custom_sensor_schema(
         message=message,
         unit_of_measurement="",
         accuracy_decimals=0,
         icon="mdi:alert",
+
+DEVICE_SCHEMA = (
+    cv.Schema(
+        {
+            cv.GenerateID(CONF_DEVICE_ID): cv.declare_id(Samsung_AC_Device),
+            cv.Optional(CONF_CAPABILITIES): CAPABILITIES_SCHEMA,
+            cv.Required(CONF_DEVICE_ADDRESS): cv.string,
+            cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE): sensor.sensor_schema(
+                unit_of_measurement=UNIT_CELSIUS,
+                accuracy_decimals=1,
+                device_class=DEVICE_CLASS_TEMPERATURE,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+            cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE_OFFSET): cv.float_,
+            cv.Optional(CONF_DEVICE_OUTDOOR_TEMPERATURE): sensor.sensor_schema(
+                unit_of_measurement=UNIT_CELSIUS,
+                accuracy_decimals=1,
+                device_class=DEVICE_CLASS_TEMPERATURE,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+            cv.Optional(CONF_DEVICE_TARGET_TEMPERATURE): NUMBER_SCHEMA,
+            cv.Optional(CONF_DEVICE_WATER_OUTLET_TARGET): NUMBER_SCHEMA,
+            cv.Optional(CONF_DEVICE_WATER_TARGET_TEMPERATURE): NUMBER_SCHEMA,
+            cv.Optional(CONF_DEVICE_POWER): switch.switch_schema(Samsung_AC_Switch),
+            cv.Optional(CONF_DEVICE_WATER_HEATER_POWER): switch.switch_schema(Samsung_AC_Switch),
+            cv.Optional(CONF_DEVICE_MODE): SELECT_MODE_SCHEMA,
+            cv.Optional(CONF_DEVICE_WATER_HEATER_MODE): SELECT_WATER_HEATER_MODE_SCHEMA,
+            cv.Optional(CONF_DEVICE_CLIMATE): CLIMATE_SCHEMA,
+            cv.Optional(CONF_DEVICE_CUSTOM, default=[]): cv.ensure_list(CUSTOM_SENSOR_SCHEMA),
+            cv.Optional(CONF_DEVICE_CUSTOM_BINARY, default=[]): cv.ensure_list(CUSTOM_BINARY_SENSOR_SCHEMA),
+
+            # keep CUSTOM_SENSOR_KEYS in sync with these
+            cv.Optional(CONF_DEVICE_WATER_TEMPERATURE): temperature_sensor_schema(0x4237),
+            cv.Optional(CONF_DEVICE_ROOM_HUMIDITY): humidity_sensor_schema(0x4038),
+        }
     )
 
 
@@ -526,6 +567,15 @@ async def to_code(config):
                         cust_sens[CONF_DEVICE_CUSTOM_MESSAGE], sens
                     )
                 )
+                cg.add(var_dev.add_custom_sensor(
+                    cust_sens[CONF_DEVICE_CUSTOM_MESSAGE], sens))
+        
+        if CONF_DEVICE_CUSTOM_BINARY in device:
+            for cust_sens in device[CONF_DEVICE_CUSTOM_BINARY]:
+                sens = await sensor.new_sensor(cust_sens)
+                cg.add(var_dev.add_custom_sensor(
+                    cust_sens[CONF_DEVICE_CUSTOM_MESSAGE], sens))
+
 
         for key in CUSTOM_SENSOR_KEYS:
             if key in device:

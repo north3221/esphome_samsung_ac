@@ -549,7 +549,11 @@ namespace esphome
             }
         }
 
+<<<<<<< HEAD
         void process_messageset(std::string source, std::string dest, MessageSet &message, MessageTarget *target)
+=======
+        void process_messageset(std::string source, std::string dest, MessageSet &message, optional<std::set<uint16_t>> &custom, optional<std::set<uint16_t>> &custom_binary, MessageTarget *target)
+>>>>>>> 0cc4ef6 (initial commit)
         {
             if (debug_mqtt_connected())
             {
@@ -584,7 +588,19 @@ namespace esphome
                 }
             }
 
+<<<<<<< HEAD
             target->set_custom_sensor(source, (uint16_t)message.messageNumber, (float)message.value);
+=======
+            if (custom && custom.value().find((uint16_t)message.messageNumber) != custom.value().end())
+            {
+                target->set_custom_sensor(source, (uint16_t)message.messageNumber, (float)message.value);
+            }
+            
+            if (custom_binary && custom_binary.value().find((uint16_t)message.messageNumber) != custom_binary.value().end())
+            {
+                target->set_custom_binary_sensor(source, (uint16_t)message.messageNumber, (bool)message.value);
+            }
+>>>>>>> 0cc4ef6 (initial commit)
 
             switch (message.messageNumber)
             {
@@ -901,6 +917,12 @@ namespace esphome
                 {
                     ESP_LOGW(TAG, "Packet %d failed after 3 attempts.", info.packet.command.packetNumber);
                 }
+            }
+            
+            optional<std::set<uint16_t>> custom_binary = target->get_custom_binary_sensors(source);
+            for (auto &message : packet_.messages)
+            {
+                process_messageset(source, dest, message, custom_binary, target);
             }
         }
 

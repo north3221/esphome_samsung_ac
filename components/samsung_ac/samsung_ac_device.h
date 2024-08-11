@@ -56,7 +56,11 @@ namespace esphome
 
       std::function<void(Mode)> write_state_;
     };
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 0cc4ef6 (initial commit)
     class Samsung_AC_Water_Heater_Mode_Select : public select::Select
     {
     public:
@@ -91,6 +95,12 @@ namespace esphome
       uint16_t message_number;
       sensor::Sensor *sensor;
     };
+    
+    struct Samsung_AC_Binary_Sensor
+    {
+      uint16_t message_number;
+      binary_sensor::Binary_Sensor *binary_sensor;
+    };
 
     class Samsung_AC_Device
     {
@@ -121,7 +131,12 @@ namespace esphome
       Samsung_AC_Mode_Select *mode{nullptr};
       Samsung_AC_Water_Heater_Mode_Select *waterheatermode{nullptr};
       Samsung_AC_Climate *climate{nullptr};
+<<<<<<< HEAD
       std::map<uint16_t, sensor::Sensor *> custom_sensor_map;
+=======
+      std::vector<Samsung_AC_Sensor> custom_sensors;
+      std::vector<Samsung_AC_Binary_Sensor> custom_binary_sensors;
+>>>>>>> 0cc4ef6 (initial commit)
       float room_temperature_offset{0};
 
       template <typename SwingType>
@@ -179,6 +194,14 @@ namespace esphome
       {
         indoor_eva_in_temperature = sensor;
       }
+      
+      void add_custom_binary_sensor(int message_number, binary_sensor::Binary_Sensor *binary_sensor)
+      {
+        Samsung_AC_Binary_Sensor cust_binary_sensor;
+        cust_binary_sensor.message_number = (uint16_t)message_number;
+        cust_binary_sensor.binary_sensor = binary_sensor;
+        custom_sensors.push_back(std::move(cust_binary_sensor));
+      }
 
       void set_indoor_eva_out_temperature_sensor(sensor::Sensor *sensor)
       {
@@ -213,6 +236,14 @@ namespace esphome
       void add_custom_sensor(int message_number, sensor::Sensor *sensor)
       {
         custom_sensor_map[(uint16_t)message_number] = sensor;
+      }
+      
+      std::set<uint16_t> get_custom_binary_sensors()
+      {
+        std::set<uint16_t> numbers;
+        for (auto &binary_sensor : custom_binary_sensors)
+          numbers.insert(binary_sensor.message_number);
+        return numbers;
       }
 
       void set_power_switch(Samsung_AC_Switch *switch_)
@@ -444,6 +475,40 @@ namespace esphome
         }
       }
 
+<<<<<<< HEAD
+=======
+      void update_room_temperature(float value)
+      {
+        if (room_temperature != nullptr)
+          room_temperature->publish_state(value + room_temperature_offset);
+        if (climate != nullptr)
+        {
+          climate->current_temperature = value + room_temperature_offset;
+          climate->publish_state();
+        }
+      }
+
+      void update_outdoor_temperature(float value)
+      {
+        if (outdoor_temperature != nullptr)
+          outdoor_temperature->publish_state(value);
+      }
+
+      void update_custom_sensor(uint16_t message_number, float value)
+      {
+        for (auto &sensor : custom_sensors)
+          if (sensor.message_number == message_number)
+            sensor.sensor->publish_state(value);
+      }
+      
+      void update_custom_binary_sensor(uint16_t message_number, bool value)
+      {
+        for (auto &binary_sensor : custom_binary_sensors)
+          if (binary_sensor.message_number == message_number)
+            binary_sensor.binary_sensor->publish_state(value);
+      }
+
+>>>>>>> 0cc4ef6 (initial commit)
       void publish_request(ProtocolRequest &request)
       {
         protocol->publish_request(target, address, request);
