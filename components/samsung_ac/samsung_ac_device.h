@@ -56,11 +56,7 @@ namespace esphome
 
       std::function<void(Mode)> write_state_;
     };
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 0cc4ef6 (initial commit)
     class Samsung_AC_Water_Heater_Mode_Select : public select::Select
     {
     public:
@@ -131,12 +127,9 @@ namespace esphome
       Samsung_AC_Mode_Select *mode{nullptr};
       Samsung_AC_Water_Heater_Mode_Select *waterheatermode{nullptr};
       Samsung_AC_Climate *climate{nullptr};
-<<<<<<< HEAD
       std::map<uint16_t, sensor::Sensor *> custom_sensor_map;
-=======
       std::vector<Samsung_AC_Sensor> custom_sensors;
       std::vector<Samsung_AC_Binary_Sensor> custom_binary_sensors;
->>>>>>> 0cc4ef6 (initial commit)
       float room_temperature_offset{0};
 
       template <typename SwingType>
@@ -475,8 +468,6 @@ namespace esphome
         }
       }
 
-<<<<<<< HEAD
-=======
       void update_room_temperature(float value)
       {
         if (room_temperature != nullptr)
@@ -508,7 +499,6 @@ namespace esphome
             binary_sensor.binary_sensor->publish_state(value);
       }
 
->>>>>>> 0cc4ef6 (initial commit)
       void publish_request(ProtocolRequest &request)
       {
         protocol->publish_request(target, address, request);
