@@ -145,6 +145,10 @@ CUSTOM_BINARY_SENSOR_SCHEMA = binary_sensor.binary_sensor_schema().extend({
     cv.Required(CONF_DEVICE_CUSTOM_MESSAGE): cv.hex_int,
 })
 
+CUSTOM_BINARY_SENSOR_SCHEMA = binary_sensor.binary_sensor_schema().extend({
+    cv.Required(CONF_DEVICE_CUSTOM_MESSAGE): cv.hex_int,
+})
+
 
 def custom_sensor_schema(
     message: int,
@@ -575,6 +579,7 @@ async def to_code(config):
                 bin_sens = await binary_sensor.new_binary_sensor(cust_bin_sens)
                 cg.add(var_dev.add_custom_binary_sensor(
                     cust_bin_sens[CONF_DEVICE_CUSTOM_MESSAGE], bin_sens))
+
 
 
         for key in CUSTOM_SENSOR_KEYS:
