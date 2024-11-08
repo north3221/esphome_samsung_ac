@@ -291,6 +291,8 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DEVICE_CUSTOM, default=[]): cv.ensure_list(
             CUSTOM_SENSOR_SCHEMA
         ),
+        cv.Optional(CONF_DEVICE_CUSTOM_BINARY, default=[]): cv.ensure_list(CUSTOM_BINARY_SENSOR_SCHEMA),
+        
         # keep CUSTOM_SENSOR_KEYS in sync with these
         cv.Optional(CONF_DEVICE_WATER_TEMPERATURE): temperature_sensor_schema(0x4237),
         cv.Optional(CONF_DEVICE_ROOM_HUMIDITY): humidity_sensor_schema(0x4038),
