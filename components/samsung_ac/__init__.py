@@ -241,7 +241,7 @@ DEVICE_SCHEMA = (
             cv.Optional(CONF_DEVICE_ROOM_HUMIDITY): humidity_sensor_schema(0x4038),
         }
     )
-
+)
 
 DEVICE_SCHEMA = cv.Schema(
     {
