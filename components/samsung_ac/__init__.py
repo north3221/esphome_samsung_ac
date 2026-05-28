@@ -18,7 +18,7 @@ from esphome.core import (
 )
 
 CODEOWNERS = ["matthias882", "lanwin"]
-DEPENDENCIES = ["mqtt", "uart"]
+DEPENDENCIES = ["uart"]
 AUTO_LOAD = ["sensor", "switch", "select", "number", "climate", "binary_sensor"]
 MULTI_CONF = False
 
