@@ -41,13 +41,13 @@ Samsung_AC_Climate = samsung_ac.class_("Samsung_AC_Climate", climate.Climate)
 SELECT_MODE_SCHEMA = select.select_schema(Samsung_AC_Mode_Select)
 SELECT_WATER_HEATER_MODE_SCHEMA = select.select_schema(Samsung_AC_Water_Heater_Mode_Select)
 
-NUMBER_SCHEMA = (
-    number.NUMBER_SCHEMA.extend(
-        {cv.GenerateID(): cv.declare_id(Samsung_AC_Number)})
-)
+
+NUMBER_SCHEMA = number.number_schema(Samsung_AC_Number).extend({
+    cv.GenerateID(): cv.declare_id(Samsung_AC_Number)
+})
 
 CLIMATE_SCHEMA = (
-    climate.CLIMATE_SCHEMA.extend(
+    climate.climate_schema(Samsung_AC_Climate).extend(
         {cv.GenerateID(): cv.declare_id(Samsung_AC_Climate)})
 )
 
@@ -121,15 +121,14 @@ CUSTOM_BINARY_SENSOR_SCHEMA = binary_sensor.binary_sensor_schema().extend({
     cv.Required(CONF_DEVICE_CUSTOM_MESSAGE): cv.hex_int,
 })
 
-
 def custom_sensor_schema(
     message: int,
-    unit_of_measurement: str = sensor._UNDEF,
-    icon: str = sensor._UNDEF,
-    accuracy_decimals: int = sensor._UNDEF,
-    device_class: str = sensor._UNDEF,
-    state_class: str = sensor._UNDEF,
-    entity_category: str = sensor._UNDEF,
+    unit_of_measurement=cv.UNDEFINED,
+    icon=cv.UNDEFINED,
+    accuracy_decimals=cv.UNDEFINED,
+    device_class=cv.UNDEFINED,
+    state_class=cv.UNDEFINED,
+    entity_category=cv.UNDEFINED,
     raw_filters=[]
 ):
     return sensor.sensor_schema(
