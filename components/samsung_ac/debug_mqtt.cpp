@@ -104,6 +104,12 @@ static void mqtt_event_handler(void *handler_args,
 #endif
             mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
 
+            if (mqtt_client == nullptr)
+            {
+                ESP_LOGE("samsung_ac_mqtt", "esp_mqtt_client_init FAILED");
+                return;
+            }
+            
             esp_mqtt_client_register_event(
                 mqtt_client,
                 MQTT_EVENT_ANY,
@@ -111,10 +117,14 @@ static void mqtt_event_handler(void *handler_args,
                 nullptr
             );
             
-            ESP_LOGI("samsung_ac_mqtt", "Connecting to MQTT broker %s:%u",
+            ESP_LOGI("samsung_ac_mqtt", "Starting MQTT client for %s:%u",
                      host.c_str(), port);
             
-            esp_mqtt_client_start(mqtt_client);
+            esp_err_t err = esp_mqtt_client_start(mqtt_client);
+            
+            ESP_LOGI("samsung_ac_mqtt",
+                     "esp_mqtt_client_start returned %d (%s)",
+                     err, esp_err_to_name(err));
         }
 #else
         (void)port;
