@@ -9,6 +9,7 @@ static AsyncMqttClient *mqtt_client{nullptr};
 #if defined(USE_ESP32) && defined(SAMSUNG_AC_DEBUG_MQTT)
 #include <mqtt_client.h>
 static esp_mqtt_client_handle_t mqtt_client{nullptr};
+static esp_err_t mqtt_start_result = ESP_FAIL;
 #endif
 
 namespace esphome
@@ -64,6 +65,15 @@ static void mqtt_event_handler(void *handler_args,
     {
         ESP_LOGI("samsung_ac_mqtt", "debug_mqtt_connect called, host='%s', port=%u",
          host.c_str(), port);
+
+#if defined(USE_ESP32) && defined(SAMSUNG_AC_DEBUG_MQTT)
+        if (mqtt_client != nullptr)
+        {
+            ESP_LOGI("samsung_ac_mqtt",
+                     "MQTT client already initialized; start result was %d (%s)",
+                     mqtt_start_result, esp_err_to_name(mqtt_start_result));
+        }
+#endif
       
         if (host.empty())
             return;
@@ -119,12 +129,12 @@ static void mqtt_event_handler(void *handler_args,
             
             ESP_LOGI("samsung_ac_mqtt", "Starting MQTT client for %s:%u",
                      host.c_str(), port);
-            
-            esp_err_t err = esp_mqtt_client_start(mqtt_client);
-            
+
+            mqtt_start_result = esp_mqtt_client_start(mqtt_client);
+
             ESP_LOGI("samsung_ac_mqtt",
                      "esp_mqtt_client_start returned %d (%s)",
-                     err, esp_err_to_name(err));
+                     mqtt_start_result, esp_err_to_name(mqtt_start_result));
         }
 #else
         (void)port;
