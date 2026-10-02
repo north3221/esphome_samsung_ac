@@ -638,9 +638,12 @@ async def to_code(config):
 
         cg.add(var.register_device(var_dev))
 
+    print("SAMSUNG_AC DEBUG MQTT HOST:", repr(config[CONF_DEBUG_MQTT_HOST]))
+    print("SAMSUNG_AC CORE.is_esp32:", CORE.is_esp32)
+
     # If debug MQTT is enabled on ESP32, we need ESP-IDF's built-in mqtt component.
     # ESPHome may exclude it by default to reduce compile time, so re-enable it only when needed.
-    if CORE.is_esp32 and config[CONF_DEBUG_MQTT_HOST]:
+    if CORE.is_esp32:
         cg.add_define("SAMSUNG_AC_DEBUG_MQTT")
         try:
             from esphome.components.esp32 import include_builtin_idf_component
