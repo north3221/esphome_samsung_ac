@@ -1,3 +1,4 @@
+#include "esphome/core/defines.h"
 #include "esphome/core/log.h"
 #include "debug_mqtt.h"
 
