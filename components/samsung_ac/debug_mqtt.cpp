@@ -15,6 +15,32 @@ namespace esphome
 {
 namespace samsung_ac
 {
+#if defined(USE_ESP32) && defined(SAMSUNG_AC_DEBUG_MQTT)
+static void mqtt_event_handler(void *handler_args,
+                               esp_event_base_t base,
+                               int32_t event_id,
+                               void *event_data)
+{
+    switch (event_id)
+    {
+        case MQTT_EVENT_CONNECTED:
+            ESP_LOGI("samsung_ac_mqtt", "MQTT connected");
+            break;
+
+        case MQTT_EVENT_DISCONNECTED:
+            ESP_LOGW("samsung_ac_mqtt", "MQTT disconnected");
+            break;
+
+        case MQTT_EVENT_ERROR:
+            ESP_LOGE("samsung_ac_mqtt", "MQTT error");
+            break;
+
+        default:
+            break;
+    }
+}
+#endif
+
     bool debug_mqtt_connected()
     {
 #if defined(USE_ESP8266)
@@ -36,6 +62,9 @@ namespace samsung_ac
     void debug_mqtt_connect(const std::string &host, const uint16_t port,
                             const std::string &username, const std::string &password)
     {
+        ESP_LOGI("samsung_ac_mqtt", "debug_mqtt_connect called, host='%s', port=%u",
+         host.c_str(), port);
+      
         if (host.empty())
             return;
 
@@ -74,6 +103,17 @@ namespace samsung_ac
             }
 #endif
             mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
+
+            esp_mqtt_client_register_event(
+                mqtt_client,
+                MQTT_EVENT_ANY,
+                mqtt_event_handler,
+                nullptr
+            );
+            
+            ESP_LOGI("samsung_ac_mqtt", "Connecting to MQTT broker %s:%u",
+                     host.c_str(), port);
+            
             esp_mqtt_client_start(mqtt_client);
         }
 #else
