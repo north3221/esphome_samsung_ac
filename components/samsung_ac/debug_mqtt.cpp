@@ -62,6 +62,9 @@ static void mqtt_event_handler(void *handler_args,
     void debug_mqtt_connect(const std::string &host, const uint16_t port,
                             const std::string &username, const std::string &password)
     {
+        ESP_LOGI("samsung_ac_mqtt", "debug_mqtt_connect called, host='%s', port=%u",
+         host.c_str(), port);
+      
         if (host.empty())
             return;
 
